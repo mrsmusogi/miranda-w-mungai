@@ -1,17 +1,267 @@
 ---
-
+import Layout from "../layouts/Layout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="miranda mungai">
+  <main class="content-container" >
+    <div class="text-block">
+      <p class="sub">
+        I am a freelance documentary film curator, events producer, and
+        facilitator experimenting with post-screening discussion.
+      </p>
+      <p class="sub">
+        I source films, and facilitate discussions in response to the themes and
+        ideas that emerge from the films. By mediating the world, film acts a
+        starting point for discussion, offering space to reflect on and discuss
+        contemporary and historical issues.
+      </p>
+      <p class="sub">
+        The intention is simply to exercise our capacity for collective enquiry.
+        The open-discussion format invites everyone to participate in a
+        conversation at a time of great division, social atomisation and
+        loneliness.
+      </p>
+      <p class="sub">
+        The themes of discussions respond to a contemporary issue or struggle.
+        Each concern tends to be representative of larger, more abstract issues.
+        Usually they point to some factor of limitation to the conditions of
+        possibility. The aim is to interrogate this limit-point and find
+        contractions in seemingly steadfast systems, institutions and practices
+        that make our world, and our life in it.
+      </p>
+      <br />
+      <p class="sub">
+        <b
+          >If you are looking for a facilitator for a post-screening dicussion,
+          please get in touch.</b
+        >
+      </p>
+    </div>
+    <div class="container">
+      <div class="big-square">
+        <div class="circle1">
+          <div class="text1">Context</div>
+        </div>
+        <div class="small-square">
+          <div class="text2">Processes</div>
+        </div>
+        <div class="circle2">
+          <div class="text3">Dialogue</div>
+        </div>
+        <div class="text4">Environments</div>
+      </div>
+
+      <div class="text-outside1">
+        Placing images in new contexts that encourage expansive responses within
+        broad themes. Offering room for images to have social value as well as
+        artistic value.
+      </div>
+
+      <div class="text-outside2">
+        Facilitating spaces that offer room to respond both to the works and to
+        others. Finding moments of collective critical enquiry anchored in the
+        image.
+      </div>
+
+      <div class="text-outside3">
+        Prioritising processes - of thought, dialogue, imagining futures - above
+        a pragmatic notion of completion. Remembering that the culmination of
+        processes does not require a clear cut end goal. A process promises
+        potential futures, centred on pushing the limits of what we know.
+      </div>
+
+      <div class="text-outside4">
+        I experiment, within the means afforded me, with what an exhibition
+        space can be. I encourage personal autonomy in a space, and playful
+        interactions with the environment.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // function scaleDiagram() {
+    //   const targets = [
+    //     { name: ".container", scaleParams: ["width", "height"] },
+    //     { name: ".big-square", scaleParams: ["width", "height"] },
+    //     {
+    //       name: ".small-square",
+    //       scaleParams: ["width", "height", "margin-left", "margin-top"],
+    //     },
+    //     { name: ".circle1", scaleParams: ["width", "height", "left", "top"] },
+    //     { name: ".circle2", scaleParams: ["width", "height", "left", "top"] },
+    //   ];
+    //   const elements = targets.forEach(({ name, scaleParams }) => {
+    //     const domEl = document.querySelector(name) as HTMLElement;
+    //     console.log(domEl);
+    //   });
+    // }
+    function scaleDiagram() {
+      const container = document.querySelector(".container") as HTMLElement;
+      if (!container) return;
+
+      const shouldScale = window.innerWidth <= 768;
+
+      if (shouldScale) {
+        const scale = container.clientWidth / 800;
+        const clampedScale = Math.max(0.4, Math.min(1, scale));
+
+        container.style.transform = `scale(${clampedScale})`;
+        container.style.transformOrigin = "top left";
+        container.style.width = "800px";
+        container.style.height = "800px";
+      } else {
+        container.style.transform = "none";
+      }
+    }
+
+    window.addEventListener("resize", scaleDiagram);
+    scaleDiagram();
+  </script>
+  <style>
+    .text-block {
+      margin-bottom: 100px;
+    }
+    .content-container {
+      width: 100%;
+      height 100%;
+      overflow-y: auto;
+    }
+    .container {
+      width: 800px;
+      height: 800px;
+      border: 2px solid black;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
+      line-height: 15px;
+    }
+
+    .big-square {
+      width: 500px;
+      height: 450px;
+      border: 5px solid black;
+      position: absolute;
+      display: flex;
+    }
+
+    .circle1 {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid black;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      left: 10px;
+      top: 300px;
+    }
+
+    .circle2 {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid black;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      left: 350px;
+      top: 10px;
+    }
+
+    .small-square {
+      width: 300px;
+      height: 250px;
+      border: 4px solid black;
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 100px;
+      margin-top: 90px;
+    }
+
+    .text1 {
+      text-align: center;
+      line-height: 14px;
+      margin-left: 36px;
+      font-family: "Inconsolata", monospace;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .text2 {
+      text-align: center;
+      line-height: 14px;
+      margin-left: 5px;
+      margin-top: -170px;
+      font-family: "Inconsolata", monospace;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .text3 {
+      text-align: center;
+      line-height: 14px;
+      margin-left: 30px;
+      font-family: "Inconsolata", monospace;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .text4 {
+      text-align: center;
+      line-height: 14px;
+      margin-left: 400px;
+      margin-top: 430px;
+      font-family: "Inconsolata", monospace;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .text-outside1 {
+      position: absolute;
+      top: 650px;
+      left: 10px;
+      font-family: "Inconsolata", monospace;
+      font-size: 12px;
+      display: inline-block;
+      width: 400px;
+      height: 100px;
+    }
+
+    .text-outside2 {
+      position: absolute;
+      top: 120px;
+      left: 400px;
+      font-family: "Inconsolata", monospace;
+      font-size: 12px;
+      display: inline-block;
+      width: 400px;
+      height: 100px;
+    }
+
+    .text-outside3 {
+      position: absolute;
+      top: 340px;
+      left: 320px;
+      font-family: "Inconsolata", monospace;
+      font-size: 10px;
+      display: inline-block;
+      width: 200px;
+      height: 100px;
+    }
+
+    .text-outside4 {
+      position: absolute;
+      top: 640px;
+      left: 550px;
+      font-family: "Inconsolata", monospace;
+      font-size: 12px;
+      display: inline-block;
+      width: 200px;
+      height: 100px;
+    }
+  </style>
+</Layout>

@@ -1,0 +1,237 @@
+---
+
+
+import NavCanvas from "./NavCanvas.astro";
+import {posts, categories} from '../assets/content' 
+
+
+---
+
+<nav class="nav-panel" id="navPanel">
+  <div class="resize-handle" id="resizeHandle"></div>
+
+  <NavCanvas />
+  <button class="nav-toggle" aria-label="Toggle navigation">⇢</button>
+  {
+    posts.map((post) => (
+      <div class="nav-group">
+        <h3>
+          {post.title} <button class="nav-arrow">⤵</button>
+        </h3>
+        <div class="nav-dropdown">
+          <ul>
+          
+              <li>
+                <a href={`/${post.category}/${post.id}`}>{post.title}</a>
+              </li>
+         
+          </ul>
+        </div>
+      </div>
+    ))
+  }
+</nav>
+
+<script>
+  const resizeHandle = document.getElementById("resizeHandle")!;
+  const navPanel = document.getElementById("navPanel")!;
+  let isResizing = false;
+
+  resizeHandle.addEventListener("mousedown", () => {
+    isResizing = true;
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isResizing) return;
+    const containerWidth = document.querySelector(".container")!.clientWidth;
+    const newWidth = (e.clientX / containerWidth) * 100;
+    if (newWidth >= 10 && newWidth <= 50) {
+      navPanel.style.width = newWidth + "%";
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (isResizing) {
+      isResizing = false;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    }
+  });
+  const toggle = document.querySelector(".nav-toggle");
+
+  toggle?.addEventListener("click", () => {
+    navPanel?.classList.toggle("open");
+    toggle?.classList.toggle("open");
+  });
+  document.querySelector("nav").addEventListener("click", (e) => {
+    if (!(e.target instanceof HTMLElement)) return;
+    const button = e.target.closest(".nav-arrow");
+    if (!button) return;
+
+    const group = button.closest(".nav-group");
+    const dropdown = group.querySelector(".nav-dropdown") as HTMLElement;
+    const itemCount = dropdown.querySelectorAll("a").length;
+
+    if (dropdown.classList.contains("show")) {
+      dropdown.style.maxHeight = "0";
+      dropdown.classList.remove("show");
+      button.textContent = "⤵";
+    } else {
+      dropdown.classList.add("show");
+      let ddSize = itemCount * 30 + 15;
+      dropdown.style.maxHeight = `${ddSize}px`;
+      button.textContent = "↲";
+      dropdown.style.transition = `max-height ${itemCount * 0.1 + 0.2}s ease-in-out`;
+    }
+  });
+</script>
+
+<style>
+  .nav-panel {
+    width: 30%;
+    min-width: 240px;
+    max-width: 400px;
+    background-color: #ffffff;
+    color: #1d2021;
+    padding-right: 20px;
+    overflow-y: scroll;
+    position: relative;
+    text-align: right;
+    margin-top: 5px;
+
+    min-height: 100dvh;
+  }
+  .nav-arrow {
+    border: none;
+    background-color: #ffffff;
+    cursor: pointer;
+    transform: none;
+    transition: transform 1s;
+  }
+  .nav-arrow:hover {
+    transform: rotate(1turn);
+  }
+  .nav-dropdown {
+    max-height: 0;
+    overflow: hidden;
+    transition: none;
+  }
+  .nav-dropdown ul {
+    list-style-type: none;
+  }
+  .nav-dropdown li a {
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 14px;
+    flex: 1;
+  }
+  .show {
+    display: block;
+  }
+  .resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    border-right: 4px groove #bfbfbf;
+    cursor: col-resize;
+    background-color: transparent;
+    z-index: 10;
+  }
+
+  .resize-handle:active {
+    border: 1px solid #1d2021;
+  }
+
+  .nav-group {
+    margin-bottom: 4px;
+  }
+
+  .nav-group h3 {
+    color: #1d2021;
+    font-size: 16px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-weight: normal;
+  }
+
+  :global(.nav-group a) {
+    display: block;
+    color: blue;
+
+    cursor: pointer;
+
+    transition: color 0.2s;
+  }
+
+  :global(.nav-group a:hover) {
+    color: #fc0000;
+  }
+
+  :global(.nav-group a:active) {
+    color: #595959;
+  }
+
+
+
+
+  @keyframes expand {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .nav-toggle {
+    display: none;
+  }
+
+  :global(.event) {
+    border-left: 2px solid #ccc;
+    padding-left: 1rem;
+    margin: 0.75rem 0;
+  }
+  @media (max-width: 768px) {
+    .nav-panel {
+      position: fixed;
+      left: -100%;
+      width: 280px;
+      height: 100dvh;
+      flex-shrink: 0;
+      transition: left 0.3s ease;
+      z-index: 100;
+    }
+    .nav-toggle {
+      display: block;
+      position: fixed;
+      top: 20px;
+      left: -1px;
+      z-index: 1100;
+      background: white;
+      color: black;
+      border: solid 1px;
+      padding: 15px;
+      border-radius: 2px 15px 15px 2px;
+      cursor: pointer;
+    }
+
+    .nav-panel.open {
+      left: 0;
+     
+    }
+    .nav-toggle.open {
+      transform: rotate(180deg);
+      border-style: groove;
+      border-radius: 2px 2px 2px 2px;
+    }
+    /* .content-panel {
+      width: 100% !important;
+    } */
+  }
+</style>

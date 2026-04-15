@@ -1,0 +1,67 @@
+---
+import NavPanel from "../components/NavPanel.astro";
+import ContentPanel from "../components/ContentPanel.astro";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "miranda mungai" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <NavPanel />
+      <ContentPanel>
+        <slot />
+      </ContentPanel>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  html,
+  body {
+    font-family: "Inconsolata", monospace;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    line-height: 20px;
+  }
+
+  .container {
+    display: flex;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  @media (max-width: 768px) {
+  html,
+  body {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+    .container {
+    height: 100dvh;  
+  }
+</style>
