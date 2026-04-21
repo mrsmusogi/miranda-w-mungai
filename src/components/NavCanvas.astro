@@ -18,9 +18,12 @@
 
   let clicked = false;
   canvas.addEventListener("mousedown", () => {
-    clicked = !clicked;
+      clicked = true;
+      setTimeout(toggleClicked, 2000)
   });
-
+function toggleClicked(){
+   clicked = false
+}
   const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
   const pixelDensity = window.devicePixelRatio || 1;
 

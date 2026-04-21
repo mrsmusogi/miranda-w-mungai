@@ -1,9 +1,11 @@
 ---
-
-
+import { getCollection } from "astro:content";
 import NavCanvas from "./NavCanvas.astro";
 import {posts, categories} from '../assets/content' 
+import { collections } from "../../content.config";
 
+const allPosts = await getCollection(collections)
+console.log(allPosts)
 
 ---
 
@@ -65,7 +67,7 @@ import {posts, categories} from '../assets/content'
     navPanel?.classList.toggle("open");
     toggle?.classList.toggle("open");
   });
-  document.querySelector("nav").addEventListener("click", (e) => {
+  document.querySelector("nav-panel").addEventListener("click", (e) => {
     if (!(e.target instanceof HTMLElement)) return;
     const button = e.target.closest(".nav-arrow");
     if (!button) return;
