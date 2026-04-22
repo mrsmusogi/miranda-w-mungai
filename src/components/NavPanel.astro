@@ -1,12 +1,23 @@
 ---
 import { getCollection } from "astro:content";
 import NavCanvas from "./NavCanvas.astro";
-import {posts, categories} from '../assets/content' 
-import { collections } from "../../content.config";
+import slugify from "../utilities/slugify";
 
-const allPosts = await getCollection(collections)
+const allPosts = await getCollection("posts", ({ data }) => data.published);
+
+
+const grouped = new Map<string, typeof allPosts>();
+for (const post of allPosts) {
+  const cat = post.data.category;
+  if (!grouped.has(cat)) grouped.set(cat, []);
+  grouped.get(cat)!.push(post);
+}
+
+function postSlug(id: string) {
+  const parts = id.split("/");
+  return parts[parts.length - 1];
+}
 console.log(allPosts)
-
 ---
 
 <nav class="nav-panel" id="navPanel">
@@ -15,18 +26,18 @@ console.log(allPosts)
   <NavCanvas />
   <button class="nav-toggle" aria-label="Toggle navigation">⇢</button>
   {
-    posts.map((post) => (
+    [...grouped.entries()].map(([category, posts]) => (
       <div class="nav-group">
         <h3>
-          {post.title} <button class="nav-arrow">⤵</button>
+          {category} <button class="nav-arrow">⤵</button>
         </h3>
         <div class="nav-dropdown">
           <ul>
-          
+            {posts.map((post) => (
               <li>
-                <a href={`/${post.category}/${post.id}`}>{post.title}</a>
+                <a href={`/${slugify(category)}/${postSlug(post.id)}`}>{post.data.title}</a>
               </li>
-         
+            ))}
           </ul>
         </div>
       </div>
@@ -35,6 +46,8 @@ console.log(allPosts)
 </nav>
 
 <script>
+
+
   const resizeHandle = document.getElementById("resizeHandle")!;
   const navPanel = document.getElementById("navPanel")!;
   let isResizing = false;
@@ -67,7 +80,7 @@ console.log(allPosts)
     navPanel?.classList.toggle("open");
     toggle?.classList.toggle("open");
   });
-  document.querySelector("nav-panel").addEventListener("click", (e) => {
+  navPanel.addEventListener("click", (e) => {
     if (!(e.target instanceof HTMLElement)) return;
     const button = e.target.closest(".nav-arrow");
     if (!button) return;
@@ -88,6 +101,7 @@ console.log(allPosts)
       dropdown.style.transition = `max-height ${itemCount * 0.1 + 0.2}s ease-in-out`;
     }
   });
+
 </script>
 
 <style>

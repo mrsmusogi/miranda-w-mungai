@@ -1,9 +1,11 @@
 import { defineConfig } from "astro/config";
-
-
+import remarkEmbed from "./src/utilities/remark-embed.js";
 
 // https://astro.build/config
 export default defineConfig({
+  markdown: {
+    remarkPlugins: [remarkEmbed],
+  },
   vite: {
     assetsInclude: ['**/*.base', '**/.obsidian/**', '**/_bases/**'],
     server: {
