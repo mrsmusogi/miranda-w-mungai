@@ -13,8 +13,6 @@ const posts = defineCollection({
       title: z.string(),
       date: z.coerce.date(),
       published: z.boolean().default(false),
-      cover: image().optional(),
-      coverAlt: z.string().optional(),
     }),
 });
 export const collections = { posts };

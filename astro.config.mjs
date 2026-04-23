@@ -6,13 +6,26 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [remarkEmbed],
   },
+  image: {
+    responsiveStyles: true,
+    layout: "constrained",
+    domains: [],
+  },
   vite: {
-    assetsInclude: ['**/*.base', '**/.obsidian/**', '**/_bases/**'],
+    assetsInclude: ["**/*.base", "**/.obsidian/**", "**/_bases/**"],
     server: {
       watch: {
-        ignored: ['**/.obsidian/**', '**/_bases/**', '**/bases/**', '**/_home/**', '**/home/**', '**/_base/**', '**/base/**']
-      }
-    }
+        ignored: [
+          "**/.obsidian/**",
+          "**/_bases/**",
+          "**/bases/**",
+          "**/_home/**",
+          "**/home/**",
+          "**/_base/**",
+          "**/base/**",
+        ],
+      },
+    },
   },
 
   devToolbar: {
