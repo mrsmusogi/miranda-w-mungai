@@ -30,7 +30,7 @@ function postSlug(id: string) {
     [...grouped.entries()].map(([category, posts]) => (
       <div class="nav-group">
         <h3>
-          {category} <button class="nav-arrow">⤵</button>
+          {category.toLowerCase()} <button class="nav-arrow">⤵</button>
         </h3>
         <div class="nav-dropdown">
           <ul>
