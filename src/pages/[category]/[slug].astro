@@ -7,7 +7,7 @@ import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts", ({ data }) => data.published);
-  console.log(posts)
+
   return posts.map((post) => {
     const parts = post.id.split("/");
     const slug = parts[parts.length - 1];

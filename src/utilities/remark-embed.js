@@ -1,11 +1,9 @@
 import { visit } from "unist-util-visit";
 import path from "node:path";
 
-import path from "node:path";
-import { visit } from "unist-util-visit";
-
 export default function remarkEmbed() {
   return (tree, file) => {
+    console.log("REMARK PLUGIN LOADED", file?.history?.[0]);
     const notePath = file?.history?.[0];
     const assetDir = notePath
       ? `${path.basename(notePath, ".md")}-assets`
@@ -23,9 +21,30 @@ export default function remarkEmbed() {
       return `./${assetDir}/${url}`;
     };
 
-    // --- Pass 1: rewrite bare image links throughout the document ---
-    visit(tree, "image", (node) => {
-      node.url = rewriteUrl(node.url);
+    const rewritePdfUrl = (url) => {
+      if (!url || url.startsWith("http") || url.startsWith("/")) return url;
+      // PDFs go to public/assets for direct access
+      return `/assets/${url}`;
+    };
+
+    // --- Pass 1: convert PDF images directly to HTML ---
+    visit(tree, "image", (node, index, parent) => {
+      console.log("IMAGE NODE:", node.url);
+      if (node.url && node.url.toLowerCase().endsWith('.pdf')) {
+        console.log("PDF FOUND:", node.url);
+        // Convert PDF to direct iframe - bypass all Astro processing
+        const pdfHtml = `<!-- PDF_CONVERTED --><div class="pdf-container" style="width:100%;height:600px;">
+  <iframe src="/assets/${node.url}" style="width:100%;height:100%;border:none;" loading="lazy"></iframe>
+</div>`;
+        
+        if (parent && typeof index === 'number') {
+          parent.children[index] = { type: "html", value: pdfHtml };
+        }
+        return;
+      } else {
+        // Regular image, just rewrite the URL
+        node.url = rewriteUrl(node.url);
+      }
     });
 
     // --- Pass 2: handle ```embed``` blocks ---
@@ -53,10 +72,9 @@ export default function remarkEmbed() {
       let html;
       if (isPdf) {
         html = `<div class="pdf-container" style="width:100%;height:600px;">
-  <iframe src="${url}" style="width:100%;height:100%;border:none;" loading="lazy"></iframe>
+  <iframe src="${rewriteUrl(url)}" style="width:100%;height:100%;border:none;" loading="lazy"></iframe>
 </div>`;
-      }
-      if (ytMatch) {
+      } else if (ytMatch) {
         const videoId = ytMatch[1];
         html = `<div class="embed-container" style="position:relative;padding-bottom:${aspectRatio}%;height:0;overflow:hidden;max-width:100%;">
   <iframe src="https://www.youtube.com/embed/${videoId}" title="${title}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen loading="lazy"></iframe>
