@@ -1,19 +1,11 @@
 import { visit } from "unist-util-visit";
 import path from "node:path";
-/**
- * Remark plugin that transforms ```embed code blocks
- * (from the Obsidian Link Embed plugin) into rendered HTML.
- *
- * Supports YouTube URLs — extracts the video ID and renders
- * a responsive iframe. Non-YouTube URLs render as a styled
- * link card with optional thumbnail.
- */
+
 import path from "node:path";
 import { visit } from "unist-util-visit";
 
 export default function remarkEmbed() {
   return (tree, file) => {
-    // --- Resolve asset subdir from the current note's filename ---
     const notePath = file?.history?.[0];
     const assetDir = notePath
       ? `${path.basename(notePath, ".md")}-assets`
@@ -47,16 +39,23 @@ export default function remarkEmbed() {
       }
 
       const url = fields.url || "";
+
+      const isPdf = url.toLowerCase().endsWith(".pdf");
       const title = fields.title || "";
       // Rewrite the embed's image field too, in case it's a local asset
       const image = rewriteUrl(fields.image || "");
       const aspectRatio = fields.aspectRatio || "56.25";
 
       const ytMatch = url.match(
-        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/,
       );
 
       let html;
+      if (isPdf) {
+        html = `<div class="pdf-container" style="width:100%;height:600px;">
+  <iframe src="${url}" style="width:100%;height:100%;border:none;" loading="lazy"></iframe>
+</div>`;
+      }
       if (ytMatch) {
         const videoId = ytMatch[1];
         html = `<div class="embed-container" style="position:relative;padding-bottom:${aspectRatio}%;height:0;overflow:hidden;max-width:100%;">

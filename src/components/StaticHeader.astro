@@ -1,0 +1,51 @@
+---
+import type { any } from "astro:schema";
+
+const { category } = Astro.props;
+---
+
+<div class="category-header">
+  {category === 'Experiments' ? (
+    <div class="custom-header">
+      <h3>Experiments</h3>
+      <div class="custom-description">
+        <p>I have been experimenting with montage since studying <a href='https://monoskop.org/images/7/7c/Eisenstein_Sergei_Film_Form_Essays_in_Film_Theory_1977.pdf'> A Dialectic Approach to Film Form” </a> by Sergei Eisenstein during my undergraduate degree. I use footage from video games, youtube and The Internet Archive. I also use recordings I’ve shot myself using my smartphone or 2011 camcorder. I make soundtracks using <a href='https://yurisizov.itch.io/boscaceoil-blue' >Bosca Ceoil: The Blue Album.</a> I have used <a href='https://everest-pipkin.com/#projects/defaultfilename.html' >default filename</a> to find footage, and <a href="https://github.com/yt-dlp/yt-dlp">youtube-dl</a> to download clips. </p>
+      </div>
+    </div>
+  ) : category === 'Logs' ? (
+    <div class="custom-header">
+      <h3>Logs</h3>
+      <div class="custom-description">
+        <p>In keeping with the work I do curating and facilitating screenings and discussions, I enjoy thinking through film. These logs are an exercise in drawing together the books and articles I read, the errant thoughts that come from this research, and the films that help me understand how ideas might be formalised or narrativised.</p>
+      </div>
+    </div>
+  ) : (
+    <h3>{category}</h3>
+  )}
+  <hr class="dashed">
+</div>
+
+<style>
+  .category-header {
+    margin-bottom: 2rem;
+  }
+  
+  .custom-header {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+  
+  .custom-description {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .dashed {
+    border: none;
+    border-top: 2px dashed #ccc;
+    margin: 1rem 0;
+  }
+</style>
