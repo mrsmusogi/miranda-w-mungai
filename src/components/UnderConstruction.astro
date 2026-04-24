@@ -1,0 +1,156 @@
+---
+
+---
+
+<canvas id="construction-canvas" width="800" height="300" />
+
+<script type="module">
+  const canvas = document.getElementById("construction-canvas");
+  const ctx = canvas.getContext("2d");
+
+  const spritePaths = [
+    '/assets/sprites/JCB.png',
+    '/assets/sprites/RWheel.png',
+    '/assets/sprites/LWHeel.png'
+  ];
+  const images = await Promise.all(spritePaths.map(src => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.src = src;
+    });
+  }));
+
+  const [jcbImg, rWheelImg, lWheelImg] = images;
+  const stationary = false;
+  const scale = 0.25;
+  const lWheelXOffset = 68;
+  const rWheelXOffset = -72;
+  const yOffset = 0;
+  const fps = 12;
+  const frameInterval = 1000 / fps;
+  const speed = 2;
+  const jitter = 2;
+  const offScreenPause = 1000;
+
+  const rWheelW = rWheelImg.naturalWidth * scale;
+  const rWheelH = rWheelImg.naturalHeight * scale;
+  const lWheelW = lWheelImg.naturalWidth * scale;
+  const lWheelH = lWheelImg.naturalHeight * scale;
+
+  let x = stationary ? canvas.width / 2 - (jcbImg.naturalWidth * scale) / 2 : canvas.width;
+  const baseY = canvas.height / 2 - (jcbImg.naturalHeight * scale) / 2 + yOffset;
+  let wheelAngle = 0;
+  let frameIndex = 0;
+  let lastFrameTime = 0;
+
+  const state = {
+    phase: 'driving', 
+    startTime: 0,
+    offScreenTime: 0,
+    textWordIndex: 0,
+    textAlpha: 0,
+    textFading: 'in'
+  };
+
+  const textWords = ['Under', 'Construction!'];
+  const textWordDuration = 1000;
+  const textFadeDuration = 1500;
+
+  function draw(timestamp) {
+    if (!lastFrameTime) lastFrameTime = timestamp;
+    const elapsed = timestamp - lastFrameTime;
+
+    if (elapsed >= frameInterval) {
+      frameIndex = (frameIndex + 1) % 10;
+      lastFrameTime = timestamp;
+    }
+
+    const rumbleY = (Math.random() - 0.5) * jitter;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (state.phase === 'driving') {
+      const jcbWidth = jcbImg.naturalWidth * scale;
+      const jcbHeight = jcbImg.naturalHeight * scale;
+      const jcbX = x;
+      const jcbY = baseY + rumbleY;
+      ctx.drawImage(jcbImg, jcbX, jcbY, jcbWidth, jcbHeight);
+
+      const rWheelX = x + jcbWidth - rWheelW + rWheelXOffset;
+      const rWheelY = jcbY + jcbHeight - rWheelH;
+      ctx.save();
+      ctx.translate(rWheelX + rWheelW/2, rWheelY + rWheelH/2);
+      ctx.rotate(wheelAngle);
+      ctx.drawImage(rWheelImg, -rWheelW/2, -rWheelH/2, rWheelW, rWheelH);
+      ctx.restore();
+
+      const lWheelX = x + lWheelXOffset;
+      const lWheelY = jcbY + jcbHeight - lWheelH;
+      ctx.save();
+      ctx.translate(lWheelX + lWheelW/2, lWheelY + lWheelH/2);
+      ctx.rotate(wheelAngle);
+      ctx.drawImage(lWheelImg, -lWheelW/2, -lWheelH/2, lWheelW, lWheelH);
+      ctx.restore();
+
+      x -= speed;
+      wheelAngle -= speed * 0.08;
+
+      if (x < -canvas.width) {
+        state.phase = 'pause';
+        state.offScreenTime = timestamp;
+        state.textWordIndex = 0;
+        state.textAlpha = 0;
+        state.textFading = 'in';
+      }
+    }
+
+    if (state.phase === 'pause') {
+      if (timestamp - state.offScreenTime >= offScreenPause) {
+        state.phase = 'textAnimating';
+        state.startTime = timestamp;
+      }
+    }
+
+    if (state.phase === 'textAnimating') {
+      const textTime = timestamp - state.startTime;
+      const currentWord = textWords[state.textWordIndex];
+
+      if (state.textFading === 'in') {
+        state.textAlpha = Math.min(1, textTime / textFadeDuration);
+        if (textTime >= textFadeDuration + textWordDuration) {
+          state.textFading = 'out';
+          state.startTime = timestamp;
+        }
+      } else {
+        state.textAlpha = Math.max(0, 1 - (textTime - textWordDuration) / textFadeDuration);
+        if (textTime >= textFadeDuration + textWordDuration + textFadeDuration) {
+          state.textWordIndex++;
+          state.textFading = 'in';
+          state.startTime = timestamp;
+
+          if (state.textWordIndex >= textWords.length) {
+            state.phase = 'driving';
+            x = canvas.width;
+          }
+        }
+      }
+
+      ctx.font = 'bold 48px Inconsolata';
+      ctx.fillStyle = `rgba(0, 0, 0, ${state.textAlpha})`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      if (state.textWordIndex < textWords.length) {
+        const fullText = textWords.slice(0, state.textWordIndex).join(' ') + 
+          (state.textWordIndex > 0 ? ' ' : '') + 
+          textWords[state.textWordIndex].substring(0, Math.floor(state.textAlpha * textWords[state.textWordIndex].length));
+        ctx.fillText(fullText || '', canvas.width / 2, canvas.height / 2);
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+</script>
