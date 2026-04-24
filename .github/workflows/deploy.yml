@@ -1,0 +1,112 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Trigger on pushes to main (including submodule pointer updates)
+  push:
+    branches: [main]
+
+  # Poll the submodule remote for new commits every 15 minutes
+  schedule:
+    - cron: "*/15 * * * *"
+
+  # Allow manual runs from the Actions tab
+  workflow_dispatch:
+
+# Allow writing to Pages and creating deployments
+permissions:
+  contents: write   # needed to commit back if you ever want to pin the submodule ref
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; don't cancel in-progress runs
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # ── 1. Checkout with submodules ──────────────────────────────────────────
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive          # initialises the vault submodule
+          fetch-depth: 0                 # full history so submodule SHA diffs work
+
+      # ── 2. Pull latest vault commits ─────────────────────────────────────────
+      - name: Update Obsidian vault submodule to latest remote commit
+        run: |
+          git submodule update --remote --merge src/content/posts
+          echo "Submodule now at: $(git -C src/content/posts rev-parse --short HEAD)"
+
+      # ── 3. Copy PDFs to /public, then remove originals ───────────────────────
+      #
+      #  Source pattern : src/content/posts/**/*-assets/*.pdf
+      #  Destination    : public/posts/<note-name>-assets/<file>.pdf
+      #
+      #  The rsync step mirrors the relative path *below* src/content/posts/ so
+      #  your Astro links can stay as /posts/<note>-assets/<file>.pdf
+      #
+      - name: Copy PDFs from vault to public/ and remove originals
+        run: |
+          set -euo pipefail
+
+          SRC="src/content/posts"
+          DEST="public/assets"
+
+          # Find every PDF sitting inside an *-assets/ subdirectory
+          find "$SRC" -type f -name "*.pdf" -path "*-assets/*" | while read -r pdf; do
+
+            # Strip the leading src/content/posts/ to get the relative path,
+            # e.g.  my-note/my-note-assets/diagram.pdf
+            rel="${pdf#$SRC/}"
+
+            target="$DEST/$rel"
+            mkdir -p "$(dirname "$target")"
+            cp "$pdf" "$target"
+            echo "Copied  $pdf  →  $target"
+
+            # Remove from source tree so Astro never tries to bundle it
+            rm "$pdf"
+            echo "Removed $pdf"
+          done
+
+          echo "PDF copy/clean complete."
+
+      # ── 4. Set up Node ───────────────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # ── 5. Install dependencies ──────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 6. Build Astro site ──────────────────────────────────────────────────
+      - name: Build
+        run: npm run build
+        env:
+          # Astro needs this for GitHub Pages subdirectory deployments.
+          # Change to your actual repo name, or remove if deploying to apex domain.
+          SITE: https://mrsmusogi.github.io
+          BASE: /miranda-w-mungai
+          NODE_ENV: production
+
+      # ── 7. Upload Pages artifact ─────────────────────────────────────────────
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist          # Astro's default output dir; change if you use outDir
+
+      # ── 8. Deploy to GitHub Pages ────────────────────────────────────────────
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
