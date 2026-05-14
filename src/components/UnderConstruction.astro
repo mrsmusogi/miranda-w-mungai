@@ -2,7 +2,49 @@
 
 ---
 
-<canvas id="construction-canvas" width="800" height="300" />
+<div class="canvas-wrapper">
+  <canvas id="construction-canvas" width="800" height="300" />
+</div>
+
+<style>
+  .canvas-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #construction-canvas {
+    display: block;
+    /* natural size on desktop */
+    width: 800px;
+    height: 300px;
+  }
+
+  /* tablet: fits within the viewport without overflowing */
+  @media (max-width: 860px) {
+    .canvas-wrapper {
+      height: calc(100vw * (300 / 800));
+      align-items: flex-start;
+    }
+    #construction-canvas {
+      width: 100vw;
+      height: calc(100vw * (300 / 800));
+      transform-origin: top left;
+    }
+  }
+
+  /* mobile: same approach, tighter */
+  @media (max-width: 768px) {
+    .canvas-wrapper {
+      height: calc(100vw * (300 / 800));
+    }
+    #construction-canvas {
+      width: 100vw;
+      height: calc(100vw * (300 / 800));
+    }
+  }
+</style>
 
 <script type="module">
   const canvas = document.getElementById("construction-canvas");
@@ -29,7 +71,7 @@
   const yOffset = 0;
   const fps = 12;
   const frameInterval = 1000 / fps;
-  const speed = 2;
+  const speed = 2.5;
   const jitter = 2;
   const offScreenPause = 1000;
 
@@ -45,7 +87,7 @@
   let lastFrameTime = 0;
 
   const state = {
-    phase: 'driving', 
+    phase: 'driving',
     startTime: 0,
     offScreenTime: 0,
     textWordIndex: 0,
@@ -53,9 +95,9 @@
     textFading: 'in'
   };
 
-  const textWords = ['Under', 'Construction!'];
-  const textWordDuration = 1000;
-  const textFadeDuration = 1500;
+  const textWords = ['⚠️Under Construction⚠️'];
+  const textWordDuration = 500;
+  const textFadeDuration = 1000;
 
   function draw(timestamp) {
     if (!lastFrameTime) lastFrameTime = timestamp;
@@ -136,14 +178,14 @@
         }
       }
 
-      ctx.font = 'bold 48px Inconsolata';
+      ctx.font = '48px Inconsolata';
       ctx.fillStyle = `rgba(0, 0, 0, ${state.textAlpha})`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
       if (state.textWordIndex < textWords.length) {
-        const fullText = textWords.slice(0, state.textWordIndex).join(' ') + 
-          (state.textWordIndex > 0 ? ' ' : '') + 
+        const fullText = textWords.slice(0, state.textWordIndex).join(' ') +
+          (state.textWordIndex > 0 ? ' ' : '') +
           textWords[state.textWordIndex].substring(0, Math.floor(state.textAlpha * textWords[state.textWordIndex].length));
         ctx.fillText(fullText || '', canvas.width / 2, canvas.height / 2);
       }

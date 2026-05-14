@@ -23,6 +23,8 @@ function postSlug(id: string) {
 <nav transition:persist class="nav-panel" id="navPanel">
   <div class="resize-handle" id="resizeHandle"></div>
 <a href="/">
+  <br> <br>
+  miranda mungai <br> <br>
   <NavCanvas />
 </a>
   <button class="nav-toggle" aria-label="Toggle navigation">⇢</button>
@@ -118,7 +120,13 @@ function postSlug(id: string) {
       dropdown.style.transition = `max-height ${itemCount * 0.1 + 0.2}s ease-in-out`;
     }
   });
-
+navPanel.addEventListener("click", (e) => {
+  if (!(e.target instanceof HTMLElement)) return;
+  const link = e.target.closest("a");
+  if (!link) return;
+  navPanel.classList.remove("open");
+  toggle.classList.remove("open");
+});
 </script>
 
 <style>
@@ -231,12 +239,12 @@ function postSlug(id: string) {
     padding-left: 1rem;
     margin: 0.75rem 0;
   }
-  @media (max-width: 768px) {
+  @media (max-width: 1023px) {
     .nav-panel {
       position: fixed;
       left: -100%;
       width: 280px;
-      height: 100dvh;
+      height: 100%;
       flex-shrink: 0;
       transition: left 0.3s ease;
       z-index: 100;
@@ -248,10 +256,10 @@ function postSlug(id: string) {
       left: -1px;
       z-index: 1100;
       background: white;
-      color: black;
-      border: solid 1px;
+      color: #7C7C7C;
+      border: 0.5px solid pink;
       padding: 15px;
-      border-radius: 2px 15px 15px 2px;
+      border-radius: 2px 4px 4px 2px;
       cursor: pointer;
     }
 
@@ -264,6 +272,17 @@ function postSlug(id: string) {
       border-style: groove;
       border-radius: 2px 2px 2px 2px;
     }
+      .resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    border-right: 4px groove #bfbfbf;
+    cursor: none;
+    background-color: transparent;
+    z-index: 10;
+  }
     /* .content-panel {
       width: 100% !important;
     } */

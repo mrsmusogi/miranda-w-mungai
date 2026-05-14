@@ -8,7 +8,7 @@
   import { vs, fs } from "../assets/flower";
 
   const BACKGROUND = "#ffffff";
-  const FOREGROUND = "#1f1e1e";
+  const FOREGROUND = "#3d3d3d";
 
   const width = 200;
   const height = 200;
@@ -59,6 +59,10 @@ function toggleClicked(){
     return { x, y, z: z + dz };
   }
 
+  let FPS = 60;
+  let dz = 1;
+  let angle = 0;
+
   function rotate_xz(
     { x, y, z }: { x: number; y: number; z: number },
     angle: number,
@@ -66,14 +70,15 @@ function toggleClicked(){
     const c = Math.cos(angle);
     const s = Math.sin(angle);
     if (clicked) {
-      return { x: x * c - y * s, y: x * s + y * c, z };
+ 
+      return { x: x * c + y % s, y: x * s + y % c, z };
+      
     }
+
     return { x: x * c - z * s, y, z: x * s + z * c };
   }
 
-  const FPS = 30;
-  let dz = 1;
-  let angle = 0;
+
 
   function frame() {
     const dt = 1 / FPS;
@@ -91,7 +96,9 @@ function toggleClicked(){
       }
     }
     setTimeout(frame, 1000 / FPS);
-    dither();
+    if(clicked){
+      dither();
+    }
   }
 
   setTimeout(frame, 1000 / FPS);
