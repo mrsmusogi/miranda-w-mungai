@@ -1,0 +1,496 @@
+
+
+<div class="diagram-section">
+
+
+  <div class="diagram desktop-diagram">
+    <div class="big-square">
+      <div class="circle1">
+        <div class="text1">Context</div>
+      </div>
+      <div class="small-square">
+        <div class="text2">Processes</div>
+      </div>
+      <div class="circle2">
+        <div class="text3">Dialogue</div>
+      </div>
+      <div class="text4">Environments</div>
+    </div>
+
+    <div class="text-outside1">
+      Placing images in new contexts that encourage expansive responses within
+      broad themes. Offering room for images to have social value as well as
+      artistic value.
+    </div>
+    <div class="text-outside2">
+      Facilitating spaces that offer room to respond both to the works and to
+      others. Finding moments of collective critical enquiry anchored in the
+      image.
+    </div>
+    <div class="text-outside3">
+      Prioritising processes — of thought, dialogue, imagining futures — above
+      a pragmatic notion of completion. Remembering that the culmination of
+      processes does not require a clear cut end goal. A process promises
+      potential futures, centred on pushing the limits of what we know.
+    </div>
+    <div class="text-outside4">
+      I experiment, within the means afforded me, with what an exhibition space
+      can be. I encourage personal autonomy in a space, and playful interactions
+      with the environment.
+    </div>
+  </div>
+
+
+  <div class="diagram tablet-diagram">
+    <div class="big-square">
+      <button class="circle1 tappable" data-key="context" aria-label="Read about Context">
+        <span class="label-text">Context</span>
+        <span class="tap-hint" aria-hidden="true">↗</span>
+      </button>
+      <div class="small-square">
+        <button class="label-btn tappable" data-key="processes" aria-label="Read about Processes">
+          <span class="label-text">Processes</span>
+          <span class="tap-hint" aria-hidden="true">↗</span>
+        </button>
+      </div>
+      <button class="circle2 tappable" data-key="dialogue" aria-label="Read about Dialogue">
+        <span class="label-text">Dialogue</span>
+        <span class="tap-hint" aria-hidden="true">↗</span>
+      </button>
+      <button class="text4-btn tappable" data-key="environments" aria-label="Read about Environments">
+        <span class="label-text">Environments</span>
+        <span class="tap-hint" aria-hidden="true">↗</span>
+      </button>
+    </div>
+  </div>
+
+
+  <div class="diagram mobile-diagram">
+    <div class="big-square">
+      <button class="circle1 tappable" data-key="context" aria-label="Read about Context">
+        <span class="label-text">Context</span>
+        <span class="tap-hint" aria-hidden="true"> 𐠵</span>
+      </button>
+      <div class="small-square">
+        <button class="label-btn tappable" data-key="processes" aria-label="Read about Processes">
+          <span class="label-text">Processes</span>
+          <span class="tap-hint" aria-hidden="true"> 𐠵</span>
+        </button>
+      </div>
+      <button class="circle2 tappable" data-key="dialogue" aria-label="Read about Dialogue">
+        <span class="label-text">Dialogue</span>
+        <span class="tap-hint" aria-hidden="true"> 𐠵</span>
+      </button>
+      <button class="text4-btn tappable" data-key="environments" aria-label="Read about Environments">
+        <span class="label-text">Environments</span>
+        <span class="tap-hint" aria-hidden="true"> 𐠵</span>
+      </button>
+    </div>
+  </div>
+
+
+  <div class="modal-backdrop" id="modal-backdrop" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <p id="modal-title" class="modal-heading"></p>
+      <p class="modal-body" id="modal-body"></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const CONTENT: Record<string, { title: string; body: string }> = {
+    context: {
+      title: "Context",
+      body: "Placing images in new contexts that encourage expansive responses within broad themes. Offering room for images to have social value as well as artistic value.",
+    },
+    processes: {
+      title: "Processes",
+      body: "Prioritising processes — of thought, dialogue, imagining futures — above a pragmatic notion of completion. Remembering that the culmination of processes does not require a clear cut end goal. A process promises potential futures, centred on pushing the limits of what we know.",
+    },
+    dialogue: {
+      title: "Dialogue",
+      body: "Facilitating spaces that offer room to respond both to the works and to others. Finding moments of collective critical enquiry anchored in the image.",
+    },
+    environments: {
+      title: "Environments",
+      body: "I experiment, within the means afforded me, with what an exhibition space can be. I encourage personal autonomy in a space, and playful interactions with the environment.",
+    },
+  };
+
+  const backdrop = document.getElementById("modal-backdrop") as HTMLElement;
+  const titleEl  = document.getElementById("modal-title")   as HTMLElement;
+  const bodyEl   = document.getElementById("modal-body")    as HTMLElement;
+
+  let animationId: number | null = null;
+
+  function animateWords(text: string) {
+    bodyEl.innerHTML = "";
+    if (animationId !== null) cancelAnimationFrame(animationId);
+
+    const words = text.split(" ");
+    words.forEach((word, i) => {
+      const span = document.createElement("span");
+      span.textContent = word + " ";
+      span.className = "word";
+      span.style.animationDelay = `${i * 55}ms`;
+      bodyEl.appendChild(span);
+    });
+  }
+
+  function openModal(key: string) {
+    const content = CONTENT[key];
+    if (!content) return;
+
+    titleEl.textContent = content.title;
+    animateWords(content.body);
+
+    backdrop.setAttribute("aria-hidden", "false");
+    backdrop.classList.add("visible");
+    document.body.classList.add("modal-open");
+  }
+
+  function closeModal() {
+    backdrop.classList.remove("visible");
+    backdrop.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+  }
+
+
+  document.querySelectorAll<HTMLButtonElement>(".tappable").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const key = btn.dataset.key;
+      if (key) openModal(key);
+    });
+  });
+
+
+  backdrop.addEventListener("click", closeModal);
+  document.querySelector(".modal-box")?.addEventListener("click", (e) => e.stopPropagation());
+
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+</script>
+
+<style>
+
+  .diagram-section {
+    font-family: "Inconsolata", monospace;
+    position: relative;
+  }
+
+
+  .desktop-diagram { display: flex; }
+  .tablet-diagram  { display: none; }
+  .mobile-diagram  { display: none; }
+
+  @media (max-width: 1023px) {
+    .desktop-diagram { display: none; }
+    .tablet-diagram  { display: flex; }
+  }
+  @media (max-width: 768px) {
+    .tablet-diagram  { display: none; }
+    .mobile-diagram  { display: flex; }
+  }
+
+  .desktop-diagram {
+    width: 800px;
+    height: 800px;
+    border: 2px solid black;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    line-height: 15px;
+  }
+
+  .desktop-diagram .big-square {
+    width: 500px;
+    height: 450px;
+    border: 5px solid black;
+    position: absolute;
+    display: flex;
+  }
+
+  .desktop-diagram .circle1 {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 2px solid black;
+    position: absolute;
+    display: flex; align-items: center;
+    left: 10px; top: 300px;
+  }
+  .desktop-diagram .circle2 {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 2px solid black;
+    position: absolute;
+    display: flex; align-items: center;
+    left: 350px; top: 10px;
+  }
+  .desktop-diagram .small-square {
+    width: 300px; height: 250px;
+    border: 4px solid black;
+    position: absolute;
+    display: flex; justify-content: center; align-items: center;
+    margin-left: 100px; margin-top: 90px;
+  }
+
+  .desktop-diagram .text1 {
+    text-align: center; line-height: 14px;
+    margin-left: 36px; font-size: 12px; font-weight: bold;
+  }
+  .desktop-diagram .text2 {
+    text-align: center; line-height: 14px;
+    margin-left: 5px; margin-top: -170px;
+    font-size: 14px; font-weight: bold;
+  }
+  .desktop-diagram .text3 {
+    text-align: center; line-height: 14px;
+    margin-left: 30px; font-size: 12px; font-weight: bold;
+  }
+  .desktop-diagram .text4 {
+    text-align: center; line-height: 14px;
+    margin-left: 400px; margin-top: 430px;
+    font-size: 12px; font-weight: bold;
+  }
+
+  .text-outside1 {
+    position: absolute; top: 650px; left: 10px;
+    font-size: 12px; display: inline-block;
+    width: 400px; height: 100px;
+  }
+  .text-outside2 {
+    position: absolute; top: 120px; left: 400px;
+    font-size: 12px; display: inline-block;
+    width: 400px; height: 100px;
+  }
+  .text-outside3 {
+    position: absolute; top: 340px; left: 320px;
+    font-size: 10px; display: inline-block;
+    width: 200px; height: 100px;
+  }
+  .text-outside4 {
+    position: absolute; top: 640px; left: 550px;
+    font-size: 12px; display: inline-block;
+    width: 200px; height: 100px;
+  }
+
+
+  .tablet-diagram {
+    width: 580px;
+    height: 580px;
+    border: 2px solid black;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    line-height: 15px;
+  }
+
+  .tablet-diagram .big-square {
+    width: 360px; height: 325px;
+    border: 3px solid black;
+    position: absolute; display: flex;
+  }
+
+  .tablet-diagram .circle1,
+  .tablet-diagram .circle2 {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    border: 1px solid black;
+    position: absolute;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+  }
+  .tablet-diagram .circle1 { left: 7px;   top: 218px; }
+  .tablet-diagram .circle2 { left: 254px; top: 7px;   }
+
+  .tablet-diagram .small-square {
+    width: 216px; height: 180px;
+    border: 3px solid black;
+    position: absolute;
+    display: flex; justify-content: center; align-items: center;
+    margin-left: 72px; margin-top: 65px;
+  }
+  .tablet-diagram .label-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+  }
+
+  .tablet-diagram .text4-btn {
+    background: transparent; border: none;
+    cursor: pointer; padding: 0;
+    position: absolute;
+    left: 280px; top: 300px;
+    display: flex; align-items: center; gap: 3px;
+  }
+
+  .mobile-diagram {
+    width: min(320px, 92vw);
+    height: min(320px, 92vw);
+    border: 1px solid black;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    line-height: 15px;
+  }
+
+  .mobile-diagram .big-square {
+    width: 200px; height: 180px;
+    border: 2px solid black;
+    position: absolute; display: flex;
+  }
+
+  .mobile-diagram .circle1,
+  .mobile-diagram .circle2 {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    border: 1px solid black;
+    position: absolute;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; padding: 0; cursor: pointer;
+  }
+  .mobile-diagram .circle1 { left: 4px;  top: 120px; }
+  .mobile-diagram .circle2 { left: 142px; top: 4px;  }
+
+  .mobile-diagram .small-square {
+    width: 120px; height: 100px;
+    border: 1px solid black;
+    position: absolute;
+    display: flex; justify-content: center; align-items: center;
+    margin-left: 40px; margin-top: 36px;
+  }
+  .mobile-diagram .label-btn {
+    background: transparent; border: none;
+    cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+  }
+  .mobile-diagram .text4-btn {
+    background: transparent; border: none;
+    cursor: pointer; padding: 0;
+    position: absolute;
+    left: 130px; top: 165px;
+    display: flex; align-items: center; gap: 2px;
+  }
+
+  .tappable {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .label-text {
+    font-family: "Inconsolata", monospace;
+    font-weight: bold;
+    font-size: 9px;
+    text-align: center;
+    line-height: 14px;
+    display: block;
+  }
+
+  .tablet-diagram .label-text { font-size: 12px; }
+
+  .tap-hint {
+    font-size: 8px;
+    opacity: 0.4;
+    display: block;
+    text-align: center;
+    margin-top: 1px;
+    transition: opacity 0.2s;
+    font-family: "Inconsolata", monospace;
+  }
+
+  .tappable:hover .tap-hint,
+  .tappable:focus-visible .tap-hint {
+    opacity: 0.9;
+  }
+
+  .tappable:hover .label-text,
+  .tappable:focus-visible .label-text {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .tappable:focus-visible {
+    outline: 1px dashed black;
+    outline-offset: 3px;
+  }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+
+  @media (max-width: 1023px) {
+    .modal-backdrop {
+      display: flex;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.visible {
+      pointer-events: all;
+      opacity: 1;
+    }
+  }
+
+  :global(body.modal-open) {
+    overflow: hidden;
+  }
+
+  .modal-box {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1.5px solid black;
+    padding: 32px 36px;
+    max-width: min(480px, 88vw);
+    width: 100%;
+    position: relative;
+  }
+
+  .modal-heading {
+    font-family: "Inconsolata", monospace;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0 0 18px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .modal-body {
+    font-family: "Inconsolata", monospace;
+    font-size: 13px;
+    line-height: 20px;
+    margin: 0;
+    color: #111;
+  }
+
+
+  :global(.word) {
+    display: inline;
+    opacity: 0;
+    animation: wordFadeIn 0.3s ease forwards;
+  }
+
+  @keyframes wordFadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
