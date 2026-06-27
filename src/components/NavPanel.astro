@@ -25,10 +25,10 @@ function postSlug(id: string) {
   <div class="resize-handle" id="resizeHandle"></div>
 <a href="/">
   <br> <br>
-  miranda mungai <br> <br>
+  miranda w. mungai <br> <br>
   <NavCanvas />
 </a>
-  <button class="nav-toggle" aria-label="Toggle navigation">⇢</button>
+  <button class="nav-toggle" aria-label="Toggle navigation">mwm</button>
   {
     [...grouped.entries()].map(([category, posts]) => (
       <div class="nav-group">
@@ -250,9 +250,12 @@ contentPanel?.addEventListener("click", () => {
   @media (max-width: 1023px) {
     .nav-panel {
       position: fixed;
+      top: 0;
       left: -100%;
       width: 280px;
-      height: 100%;
+      height: auto;
+      bottom:0;
+      margin-top: 0;
       flex-shrink: 0;
       transition: left 0.3s ease;
       z-index: 100;
@@ -263,11 +266,21 @@ contentPanel?.addEventListener("click", () => {
       top: 20px;
       left: -1px;
       z-index: 1100;
-      background: white;
-      color: #7C7C7C;
-      border: 0.5px solid pink;
-      padding: 15px;
-      border-radius: 2px 4px 4px 2px;
+      background-color: rgba(0, 0, 0, 0.05);
+      color: white;
+  
+      border: none;
+      padding: 1rem;
+      /* border-radius: 2px 2px 2px 2px; */
+      clip-path: polygon(
+        0% 20%,
+        60% 20%,
+        60% 0%,
+        100% 50%,
+        60% 100%,
+        60% 80%,
+        0% 80%
+      );
       cursor: pointer;
     }
 
@@ -277,8 +290,9 @@ contentPanel?.addEventListener("click", () => {
     }
     .nav-toggle.open {
       transform: rotate(180deg);
-      border-style: groove;
-      border-radius: 2px 2px 2px 2px;
+          color: #7C7C7C;
+
+);
     }
       .resize-handle {
     position: absolute;
@@ -289,7 +303,7 @@ contentPanel?.addEventListener("click", () => {
     border-right: 4px groove #bfbfbf;
     cursor: none;
     background-color: transparent;
-    z-index: 10;
+    z-index: 100;
   }
     /* .content-panel {
       width: 100% !important;
