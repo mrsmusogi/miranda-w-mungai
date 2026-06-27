@@ -128,6 +128,13 @@ navPanel.addEventListener("click", (e) => {
   navPanel.classList.remove("open");
   toggle.classList.remove("open");
 });
+const contentPanel = document.querySelector(".content-panel");
+contentPanel?.addEventListener("click", () => {
+  if (!navPanel.classList.contains("open")) return;
+  navPanel.classList.remove("open");
+  toggle?.classList.remove("open");
+  closeAllDropdowns();
+});
 </script>
 
 <style>
